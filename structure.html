@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Structure Page</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background-color: #111;
+      color: white;
+      text-align: center;
+      padding-top: 50px;
+    }
+
+    h2 {
+      cursor: pointer;
+      margin: 20px;
+      color: #00ffcc;
+    }
+
+    .content {
+      display: none;
+      margin: 20px;
+      padding: 15px;
+      border: 1px solid #444;
+      border-radius: 10px;
+      background-color: #1a1a1a;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin-top: 30px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Case Structure</h1>
+
+  <!-- HEADINGS -->
+  <h2 onclick="toggle('identity')">Identity</h2>
+  <div id="identity" class="content">
+    <p>Possible Identity Cards in USA:</p>
+    <ul>
+      <li>Driver’s License</li>
+      <li>Passport</li>
+      <li>State ID</li>
+      <li>Social Security Card</li>
+      <li>Voter ID</li>
+      <li>Work Permit</li>
+      <li>Student ID</li>
+      <li>Military ID</li>
+      <li>Health Insurance Card</li>
+      <li>Employee ID</li>
+    </ul>
+
+    <p><b>Case No:</b> 778249</p>
+    <p><b>Identity Security Level:</b> 13%</p>
+    <p><b>Date:</b> 19/05/2026 13:45</p>
+  </div>
+
+  <h2 onclick="toggle('network')">Network</h2>
+  <div id="network" class="content">
+    <p>
+      All devices such as mobile, laptop, smart TV, computer, smart watch,
+      desktop etc. are connected to your home network.
+    </p>
+    <p>
+      If a hacker gains access to even one device, they can potentially
+      access all connected devices and steal sensitive information.
+    </p>
+
+    <p><b>Network Security of Case 778249:</b> 34%</p>
+  </div>
+
+  <h2 onclick="toggle('finance')">Finance</h2>
+  <div id="finance" class="content">
+    <p>
+      All banks and investments that existed before the hacking attempt
+      must be updated and secured according to agent instructions.
+    </p>
+
+    <p><b>Financial Security of Case 778249:</b> 0%</p>
+  </div>
+
+  <!-- READ MORE BUTTON -->
+  <button onclick="goNext()">Read More</button>
+
+  <script>
+    function toggle(id) {
+      let sections = document.querySelectorAll(".content");
+      sections.forEach(sec => sec.style.display = "none");
+
+      document.getElementById(id).style.display = "block";
+    }
+
+    function goNext() {
+      window.location.href = "third.html";
+    }
+  </script>
+
+</body>
+</html>
