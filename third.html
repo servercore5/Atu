@@ -2,24 +2,180 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Final Page</title>
+  <title>Victim Agreement</title>
 
   <style>
     body {
-      background-color: black;
-      color: red;
-      font-family: Arial;
+      font-family: "Segoe UI", Tahoma;
+      background-color: #eef2f7;
+      margin: 0;
+    }
+
+    .header {
+      background-color: #1a3c6e;
+      color: white;
+      padding: 15px;
       text-align: center;
-      padding-top: 100px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #1a3c6e;
+    }
+
+    p {
+      margin: 10px 0;
+      line-height: 1.6;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #1a3c6e;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    button:hover {
+      background-color: #16325a;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+      color: #1a3c6e;
+      font-weight: bold;
+    }
+
+    .success {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+      color: green;
+      font-size: 18px;
+    }
+
+    .caseid {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 14px;
+      color: gray;
     }
   </style>
 </head>
 
 <body>
 
-  <h1>⚠️ SYSTEM BREACH DETECTED ⚠️</h1>
-  <p>Agent has been notified.</p>
-  <p>Further instructions will be provided soon...</p>
+<div class="header">
+  Federal Trade Commission - Identity Protection Division
+</div>
+
+<div class="container">
+
+  <h1>Victim Agreement</h1>
+  <div class="caseid">Case ID: FTC-778249-US</div>
+
+  <p>1. I confirm that I have no involvement in any internet-related crime conducted through the misuse of my identity.</p>
+
+  <p>2. Upon recognizing the compromise, I immediately contacted the Federal Trade Commission (FTC).</p>
+
+  <p>3. I have not transferred funds for any unlawful purpose domestically or internationally.</p>
+
+  <p>4. My network is under Microsoft monitoring and my identity is under FTC protection.</p>
+
+  <p>5. I am fully complying with all instructions provided by authorized agencies.</p>
+
+  <label><input type="checkbox"> I agree with statement 1</label>
+  <label><input type="checkbox"> I agree with statement 2</label>
+  <label><input type="checkbox"> I agree with statement 3</label>
+  <label><input type="checkbox"> I agree with statement 4</label>
+  <label><input type="checkbox"> I agree with statement 5</label>
+
+  <button onclick="submitForm()">Agree & Submit</button>
+
+  <div class="loading" id="loading">
+    Verifying submission... Please wait ⏳
+  </div>
+
+  <div class="success" id="successMsg">
+    ✅ Submission Successful  
+    <br><br>
+    Your case has been logged with FTC.  
+    Reference ID: US-SEC-992871  
+    <br><br>
+    <button onclick="downloadPDF()">Download Report</button>
+  </div>
+
+</div>
+
+<script>
+function submitForm() {
+  let checkboxes = document.querySelectorAll("input[type='checkbox']");
+  let allChecked = true;
+
+  checkboxes.forEach(cb => {
+    if (!cb.checked) {
+      allChecked = false;
+    }
+  });
+
+  if (!allChecked) {
+    alert("Please agree to all terms.");
+    return;
+  }
+
+  document.getElementById("loading").style.display = "block";
+
+  setTimeout(() => {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("successMsg").style.display = "block";
+  }, 2500);
+}
+
+function downloadPDF() {
+  let text = `
+FTC REPORT
+
+Case ID: FTC-778249-US
+Status: Verified
+
+Identity: Compromised
+Network: At Risk
+Finance: Critical
+
+Action Required:
+Follow all FTC instructions strictly.
+
+Generated on: 19/05/2026
+  `;
+
+  let blob = new Blob([text], { type: "text/plain" });
+  let link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "FTC_Report.txt";
+  link.click();
+}
+</script>
 
 </body>
 </html>
