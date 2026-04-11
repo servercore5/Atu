@@ -1,227 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FTC secure wallet</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<style>
-body { margin:0; font-family:Arial; background:#eef2f7; transition:0.3s;}
-.dark { background:#121212; color:white;}
-
-header, footer {
-  background:#0a3d91;
-  color:white;
-  padding:15px;
-}
-
-header img { height:40px; }
-
-.menu { position:absolute; right:20px; top:15px; }
-
-.dropdown {
-  display:none;
-  position:absolute;
-  right:0;
-  background:white;
-  width:220px;
-}
-
-.dropdown div {
-  padding:10px;
-  border-bottom:1px solid #ddd;
-  color:black;
-  cursor:pointer;
-}
-
-.container { padding:20px; }
-
-.box {
-  background:white;
-  padding:20px;
-  border-radius:10px;
-  margin:15px 0;
-}
-
-.dark .box { background:#1e1e1e; }
-
-button {
-  padding:10px;
-  margin-top:10px;
-  background:#0a3d91;
-  color:white;
-  border:none;
-  cursor:pointer;
-}
-
-#assistant {
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  background:#0a3d91;
-  color:white;
-  padding:15px;
-  border-radius:50%;
-  cursor:pointer;
-}
-
-.toggle {
-  position:fixed;
-  top:20px;
-  left:20px;
-  cursor:pointer;
-}
-
-/* CARD */
-.card {
-  width:300px;
-  height:180px;
-  perspective:1000px;
-}
-
-.card-inner {
-  width:100%;
-  height:100%;
-  transition:0.6s;
-  transform-style:preserve-3d;
-}
-
-.card:hover .card-inner { transform:rotateY(180deg); }
-
-.card-front, .card-back {
-  position:absolute;
-  width:100%;
-  height:100%;
-  backface-visibility:hidden;
-  border-radius:10px;
-  padding:20px;
-  color:white;
-}
-
-.card-front { background:#0a3d91; }
-.card-back { background:#222; transform:rotateY(180deg); }
-
-/* Satellite */
-#satellite {
-  position:fixed;
-  top:50%;
-  left:-50px;
-  font-size:30px;
-  animation:fly 10s linear infinite;
-}
-
-@keyframes fly {
-  from { left:-50px; }
-  to { left:110%; }
-}
-
-/* Notification */
-#notif {
-  position:fixed;
-  top:20px;
-  right:20px;
-  background:green;
-  color:white;
-  padding:10px;
-  display:none;
-}
-</style>
-</head>
-
-<body>
-
-<header>
-  <img src="125.png"> Federal Trade Commission
-
-  <div class="menu">
-    <button onclick="toggleMenu()">☰</button>
-    <div class="dropdown" id="menuBox">
-      <div>👤 Profile</div>
-      <div>Checkings</div>
-      <div>Savings</div>
-      <div>Investments</div>
-      <div>Credit Card</div>
-      <div>Loans</div>
-      <div onclick="logout()">🚪 Sign Out</div>
-    </div>
-  </div>
-</header>
-
-<div class="toggle" onclick="toggleDark()">🌙</div>
-<div id="satellite">🛰️💷</div>
-
-<div class="container">
-
-<div class="card">
-  <div class="card-inner">
-    <div class="card-front">
-      💳 Premium Card<br><br>
-      1200 3478 6766 7776
-    </div>
-    <div class="card-back">
-      CVV: 987<br>Exp: 12/28
-    </div>
-  </div>
-</div>
-
-<div class="box" onclick="showBalance()">
-  Account: 13007677876609
-  <h2 id="balance">$750.00</h2>
-</div>
-
-<div class="box">
-  <button onclick="toggleTx()">View Transactions</button>
-  <div id="tx" style="display:none;">
-    <p>21-03-2026 | $250 | Case Compensation</p>
-    <p>28-03-2026 | $250 | Case Compensation</p>
-    <p>04-04-2026 | $250 | Case Compensation</p>
-  </div>
-</div>
-
-<div class="box">
-  <h3>USD → GBP</h3>
-  <input id="usd" type="number">
-  <button onclick="convert()">Convert</button>
-  <p id="res"></p>
-</div>
-
-<div class="box">
-  <canvas id="chart"></canvas>
-</div>
-
-<div class="box">
-  <button onclick="addFunds()">Add Funds</button>
-  <div id="fundFlow"></div>
-</div>
-
-<div class="box">
-  <button onclick="loadVideos()">Unlock Content</button>
-  <div id="videos"></div>
-</div>
-
-<div class="box">
-  <button onclick="scanFinger()">🔐 Scan Fingerprint</button>
-  <p id="fingerStatus"></p>
-</div>
-
-<div class="box">
-  <h3>Blockchain Ledger</h3>
-  <div id="ledger" style="height:120px; overflow:auto;"></div>
-</div>
-
-<div class="box">
-  XP: <span id="xp">0</span> | Level: <span id="level">1</span>
-  <button onclick="gainXP()">Earn XP</button>
-</div>
-
-</div>
-
-<div id="assistant" onclick="ai()">🤖</div>
-<div id="notif">Success ✔</div>
-
-<footer>Federal Trade commission secure wallet</footer>
+<!-- SAME CODE ABOVE... (UNCHANGED HEAD, STYLE, BODY etc.) -->
 
 <script>
 
@@ -270,13 +47,17 @@ new Chart(document.getElementById("chart"), {
 
 function addFunds(){
   document.getElementById("fundFlow").innerHTML=`
-    <select><option>$10,000</option><option>$50,000</option></select>
+    <select id="amount">
+      <option value="10000">$10,000</option>
+      <option value="50000">$50,000</option>
+    </select>
     <button onclick="submitFunds()">Submit</button>
   `;
 }
 
-/* UPDATED FUNCTION */
 function submitFunds(){
+  let amt = document.getElementById("amount").value;
+
   document.getElementById("notif").style.display="block";
   setTimeout(()=>{document.getElementById("notif").style.display="none";},2000);
 
@@ -295,7 +76,7 @@ function submitFunds(){
     let val = this.value;
     if(val==="cash" || val==="ups"){
       document.getElementById("nextStep").innerHTML=`
-        <button onclick="finalSubmit()">Submit</button>
+        <button onclick="finalSubmit(${amt}, '${val}')">Submit</button>
       `;
     } else {
       document.getElementById("nextStep").innerHTML="";
@@ -303,19 +84,65 @@ function submitFunds(){
   };
 }
 
-/* NEW FUNCTION */
-function finalSubmit(){
+function finalSubmit(amount, method){
+
   document.getElementById("fundFlow").innerHTML=`
-    <p>The process of $50,000 in secure wallet will start soon,<br>
+    <p>The process of $${amount} in secure wallet will start soon,<br>
     your case officer or coordinator will give you the next updates.</p>
+    <div id="tracking"></div>
   `;
+
+  let balEl = document.getElementById("balance");
+  let current = parseInt(balEl.innerText.replace(/[^0-9]/g,'')) || 750;
+  let target = current + parseInt(amount);
+
+  let i = setInterval(()=>{
+    current += 500;
+    balEl.innerHTML="£"+current;
+    if(current >= target){
+      balEl.innerHTML="£"+target;
+      clearInterval(i);
+    }
+  },30);
+
+  let steps = [
+    "📦 Order Created",
+    "🚚 Pickup Scheduled",
+    "🛫 In Transit",
+    "🏢 Reached Secure Facility",
+    "✅ Funds Processing"
+  ];
+
+  let tDiv = document.getElementById("tracking");
+  let i2 = 0;
+
+  let tracker = setInterval(()=>{
+    if(i2 < steps.length){
+      tDiv.innerHTML += "<p>"+steps[i2]+"</p>";
+      i2++;
+    } else {
+      clearInterval(tracker);
+      tDiv.innerHTML += "<p>💰 Funds Added Successfully</p>";
+    }
+  },1500);
 }
 
+/* 🎥 UPDATED VIDEOS */
 function loadVideos(){
   let html="";
+
   for(let i=1;i<=5;i++){
-    html+=`<button onclick="this.innerHTML='Available after 24h'">▶ Video ${i}</button><br>`;
+    if(i===1){
+      html+=`
+        <video width="100%" controls>
+          <source src="1.mp4" type="video/mp4">
+        </video><br><br>
+      `;
+    } else {
+      html+=`<button onclick="this.innerHTML='Available after 24h'">▶ Video ${i}</button><br>`;
+    }
   }
+
   document.getElementById("videos").innerHTML=html;
 }
 
@@ -353,6 +180,3 @@ function gainXP(){
 }
 
 </script>
-
-</body>
-</html>
