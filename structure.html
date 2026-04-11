@@ -30,6 +30,7 @@ header {
   border-radius:10px;
   margin-bottom:15px;
   cursor:pointer;
+  font-weight:bold;
 }
 
 .video-box {
@@ -46,6 +47,11 @@ button {
   border:none;
   cursor:pointer;
   margin-bottom:10px;
+  border-radius:5px;
+}
+
+button:hover {
+  background:#062a63;
 }
 </style>
 </head>
@@ -76,7 +82,8 @@ function showDocs(){
 
 let videoContainer = document.getElementById("videos");
 
-for(let i=1;i<=6;i++){
+// 🔥 1 se 12 tak sab videos generate honge
+for(let i=1;i<=12;i++){
   videoContainer.innerHTML += `
     <div class="video-box">
       <button onclick="playVideo(${i})">▶ Play Video ${i}</button>
