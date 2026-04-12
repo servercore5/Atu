@@ -12,8 +12,9 @@ body { margin:0; font-family:Arial; background:#eef2f7;}
 .dark { background:#121212; color:white;}
 
 header, footer {background:#0a3d91;color:white;padding:15px;}
-.menu { position:absolute; right:20px; top:15px;}
+header img{height:40px;}
 
+.menu { position:absolute; right:20px; top:15px;}
 .dropdown {display:none; position:absolute; right:0; background:white; width:220px;}
 .dropdown div {padding:10px; border-bottom:1px solid #ddd; cursor:pointer;}
 
@@ -24,26 +25,36 @@ header, footer {background:#0a3d91;color:white;padding:15px;}
 button {padding:10px; background:#0a3d91; color:white; border:none; cursor:pointer;}
 
 #notif {position:fixed; top:20px; right:20px; background:green; color:white; padding:10px; display:none;}
-
 .toggle {position:fixed; top:20px; left:20px; cursor:pointer;}
+
+/* CARD */
+.card {width:300px;height:180px;perspective:1000px;}
+.card-inner {width:100%;height:100%;transition:0.6s;transform-style:preserve-3d;}
+.card:hover .card-inner {transform:rotateY(180deg);}
+.card-front,.card-back {
+position:absolute;width:100%;height:100%;
+backface-visibility:hidden;border-radius:10px;padding:20px;color:white;
+}
+.card-front {background:#0a3d91;}
+.card-back {background:#222;transform:rotateY(180deg);}
 </style>
 </head>
 
 <body>
 
 <header>
-FTC Secure Wallet
+<img src="125.png"> Federal Trade Commission
 
 <div class="menu">
 <button onclick="toggleMenu()">☰</button>
 <div class="dropdown" id="menuBox">
-<div>Profile</div>
+<div>👤 Profile</div>
 <div>Checkings</div>
 <div>Savings</div>
 <div>Investments</div>
 <div>Credit Card</div>
 <div>Loans</div>
-<div onclick="logout()">Sign Out</div>
+<div onclick="logout()">🚪 Sign Out</div>
 </div>
 </div>
 </header>
@@ -52,7 +63,22 @@ FTC Secure Wallet
 
 <div class="container">
 
+<!-- CARD -->
+<div class="card">
+<div class="card-inner">
+<div class="card-front">
+💳 Premium Card<br><br>
+1200 3478 6766 7776
+</div>
+<div class="card-back">
+CVV: 987<br>Exp: 12/28
+</div>
+</div>
+</div>
+
+<!-- ACCOUNT -->
 <div class="box">
+Account: 13007677876609
 <h2 id="balance">$51,000.00</h2>
 </div>
 
@@ -69,10 +95,27 @@ FTC Secure Wallet
 </select>
 
 <input id="search" onkeyup="filterTx()" placeholder="Search...">
-<button onclick="downloadTx()">Download</button>
+<button onclick="downloadTx()">📥 Download</button>
 
 <div id="txList"></div>
 </div>
+</div>
+
+<!-- GRAPH -->
+<div class="box">
+<canvas id="chart"></canvas>
+</div>
+
+<!-- ADD FUNDS -->
+<div class="box">
+<button onclick="addFunds()">Add Funds</button>
+<div id="fundFlow"></div>
+</div>
+
+<!-- CONTENT -->
+<div class="box">
+<button onclick="loadVideos()">Unlock Content</button>
+<div id="videos"></div>
 </div>
 
 <!-- TRANSFER -->
@@ -80,11 +123,6 @@ FTC Secure Wallet
 <h3>Transfer Money</h3>
 <button onclick="openTransfer()">Start Transfer</button>
 <div id="transferFlow"></div>
-</div>
-
-<!-- CHART -->
-<div class="box">
-<canvas id="chart"></canvas>
 </div>
 
 <!-- LEDGER -->
@@ -95,6 +133,8 @@ FTC Secure Wallet
 
 </div>
 
+<footer>Federal Trade commission secure wallet</footer>
+
 <div id="notif">Success</div>
 
 <script>
@@ -104,13 +144,12 @@ function toggleMenu(){
 let m=document.getElementById("menuBox");
 m.style.display=m.style.display==="block"?"none":"block";
 }
-
 function logout(){alert("Logged out");}
 
 // DARK
 function toggleDark(){document.body.classList.toggle("dark");}
 
-// TRANSACTIONS (FULL RESTORED)
+// TRANSACTIONS
 let transactions=[
 {type:"deposit",name:"Cash Deposit",date:"12-04-2026 04:59 PM",amount:50000},
 {type:"comp",name:"Case Compensation",date:"11-04-2026 08:34 AM",amount:250},
@@ -119,7 +158,6 @@ let transactions=[
 {type:"comp",name:"Case Compensation",date:"21-03-2026 03:34 PM",amount:250}
 ];
 
-// RENDER
 function renderTx(list){
 let html="";
 list.forEach(t=>{
@@ -133,7 +171,6 @@ html+=`<div style="display:flex;justify-content:space-between;padding:10px;">
 document.getElementById("txList").innerHTML=html;
 }
 
-// FILTER
 function filterTx(){
 let f=document.getElementById("filter").value;
 let s=document.getElementById("search").value.toLowerCase();
@@ -145,7 +182,6 @@ return (f==="all"||t.type===f) &&
 renderTx(filtered);
 }
 
-// DOWNLOAD
 function downloadTx(){
 let content="";
 transactions.forEach(t=>{
@@ -156,6 +192,28 @@ let a=document.createElement("a");
 a.href=URL.createObjectURL(blob);
 a.download="transactions.txt";
 a.click();
+}
+
+// ADD FUNDS
+function addFunds(){
+document.getElementById("fundFlow").innerHTML=`
+<select><option>$10,000</option><option>$50,000</option></select>
+<button onclick="submitFunds()">Submit</button>
+`;
+}
+
+function submitFunds(){
+document.getElementById("notif").style.display="block";
+setTimeout(()=>{document.getElementById("notif").style.display="none";},2000);
+}
+
+// VIDEOS
+function loadVideos(){
+let html="";
+for(let i=1;i<=5;i++){
+html+=`<button onclick="this.innerHTML='Available after 24h'">▶ Video ${i}</button><br>`;
+}
+document.getElementById("videos").innerHTML=html;
 }
 
 // TRANSFER
@@ -186,7 +244,7 @@ renderTx(transactions);
 
 let n=document.getElementById("notif");
 n.style.display="block";
-n.innerText="Payment Sent!";
+n.innerText="💸 Payment Sent!";
 setTimeout(()=>n.style.display="none",3000);
 
 },delay);
