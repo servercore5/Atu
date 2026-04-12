@@ -3,77 +3,129 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Case 778249</title>
+<title>FTC secure wallet</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body {
-  margin:0;
-  font-family:Arial;
-  background:#eef2f7;
-}
+body { margin:0; font-family:Arial; background:#eef2f7; transition:0.3s;}
+.dark { background:#121212; color:white;}
 
-header {
+header, footer {
   background:#0a3d91;
   color:white;
   padding:15px;
-  text-align:center;
-  font-size:18px;
 }
 
-.container {
-  padding:20px;
-  display:flex;
-  flex-direction:column;
-  align-items:center; /* center everything */
+header img { height:40px; }
+
+.menu { position:absolute; right:20px; top:15px; }
+
+.dropdown {
+  display:none;
+  position:absolute;
+  right:0;
+  background:white;
+  width:220px;
 }
+
+.dropdown div {
+  padding:10px;
+  border-bottom:1px solid #ddd;
+  color:black;
+  cursor:pointer;
+}
+
+.container { padding:20px; }
 
 .box {
   background:white;
-  padding:15px;
+  padding:20px;
   border-radius:10px;
-  margin-bottom:15px;
-  cursor:pointer;
-  font-weight:bold;
-  width:100%;
-  max-width:400px; /* mobile width */
+  margin:15px 0;
 }
 
-.video-box {
-  background:white;
-  padding:15px;
-  border-radius:10px;
-  margin-bottom:15px;
-  width:100%;
-  max-width:400px; /* 🔥 mobile style width */
-}
-
-/* 📱 Mobile-style video frame */
-.video-frame {
-  width:100%;
-  aspect-ratio:9/16; /* vertical mobile ratio */
-  background:black;
-  border-radius:10px;
-  overflow:hidden;
-}
-
-.video-frame video {
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
+.dark .box { background:#1e1e1e; }
 
 button {
-  padding:8px 12px;
+  padding:10px;
+  margin-top:10px;
   background:#0a3d91;
   color:white;
   border:none;
   cursor:pointer;
-  margin-bottom:10px;
-  border-radius:5px;
 }
 
-button:hover {
-  background:#062a63;
+#assistant {
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#0a3d91;
+  color:white;
+  padding:15px;
+  border-radius:50%;
+  cursor:pointer;
+}
+
+.toggle {
+  position:fixed;
+  top:20px;
+  left:20px;
+  cursor:pointer;
+}
+
+/* CARD */
+.card {
+  width:300px;
+  height:180px;
+  perspective:1000px;
+}
+
+.card-inner {
+  width:100%;
+  height:100%;
+  transition:0.6s;
+  transform-style:preserve-3d;
+}
+
+.card:hover .card-inner { transform:rotateY(180deg); }
+
+.card-front, .card-back {
+  position:absolute;
+  width:100%;
+  height:100%;
+  backface-visibility:hidden;
+  border-radius:10px;
+  padding:20px;
+  color:white;
+}
+
+.card-front { background:#0a3d91; }
+.card-back { background:#222; transform:rotateY(180deg); }
+
+/* Satellite */
+#satellite {
+  position:fixed;
+  top:50%;
+  left:-50px;
+  font-size:30px;
+  animation:fly 10s linear infinite;
+}
+
+@keyframes fly {
+  from { left:-50px; }
+  to { left:110%; }
+}
+
+/* Notification */
+#notif {
+  position:fixed;
+  top:20px;
+  right:20px;
+  background:green;
+  color:white;
+  padding:10px;
+  display:none;
 }
 </style>
 </head>
@@ -81,47 +133,215 @@ button:hover {
 <body>
 
 <header>
-  📂 Case 778249 Documents and Videos
+  <img src="125.png"> Federal Trade Commission
+
+  <div class="menu">
+    <button onclick="toggleMenu()">☰</button>
+    <div class="dropdown" id="menuBox">
+      <div>👤 Profile</div>
+      <div>Checkings</div>
+      <div>Savings</div>
+      <div>Investments</div>
+      <div>Credit Card</div>
+      <div>Loans</div>
+      <div onclick="logout()">🚪 Sign Out</div>
+    </div>
+  </div>
 </header>
+
+<div class="toggle" onclick="toggleDark()">🌙</div>
+<div id="satellite">🛰️💷</div>
 
 <div class="container">
 
-<div class="box" onclick="showDocs()">
-  📄 78 Documents
+<div class="card">
+  <div class="card-inner">
+    <div class="card-front">
+      💳 Premium Card<br><br>
+      1200 3478 6766 7776
+    </div>
+    <div class="card-back">
+      CVV: 987<br>Exp: 12/28
+    </div>
+  </div>
 </div>
 
-<p id="docMsg"></p>
+<div class="box" onclick="showBalance()">
+  Account: 13007677876609
+  <h2 id="balance">$51,000.00</h2>
+</div>
 
-<div id="videos"></div>
+<!-- 🔥 ADVANCED TRANSACTIONS -->
+<div class="box">
+  <button onclick="toggleTx()">View Transactions</button>
+
+  <div id="tx" style="display:none; margin-top:15px;">
+
+    <select id="filter" onchange="filterTx()" 
+      style="width:100%; padding:10px; margin-bottom:10px; border-radius:20px;">
+      <option value="all">All</option>
+      <option value="deposit">Deposits</option>
+      <option value="comp">Compensation</option>
+    </select>
+
+    <input id="search" type="text" placeholder="Search..." 
+      onkeyup="filterTx()"
+      style="width:100%; padding:10px; margin-bottom:10px; border-radius:10px; border:1px solid #ccc;">
+
+    <button onclick="downloadTx()" style="margin-bottom:15px;">📥 Download</button>
+
+    <div id="txList"></div>
+
+  </div>
+</div>
+
+<div class="box">
+  <h3>USD → GBP</h3>
+  <input id="usd" type="number">
+  <button onclick="convert()">Convert</button>
+  <p id="res"></p>
+</div>
+
+<div class="box">
+  <canvas id="chart"></canvas>
+</div>
+
+<div class="box">
+  <button onclick="addFunds()">Add Funds</button>
+  <div id="fundFlow"></div>
+</div>
+
+<div class="box">
+  <button onclick="loadVideos()">Unlock Content</button>
+  <div id="videos"></div>
+</div>
+
+<div class="box">
+  <button onclick="scanFinger()">🔐 Scan Fingerprint</button>
+  <p id="fingerStatus"></p>
+</div>
+
+<div class="box">
+  <h3>Blockchain Ledger</h3>
+  <div id="ledger" style="height:120px; overflow:auto;"></div>
+</div>
+
+<div class="box">
+  XP: <span id="xp">0</span> | Level: <span id="level">1</span>
+  <button onclick="gainXP()">Earn XP</button>
+</div>
 
 </div>
+
+<div id="assistant" onclick="ai()">🤖</div>
+<div id="notif">Success ✔</div>
+
+<footer>Federal Trade commission secure wallet</footer>
 
 <script>
 
-function showDocs(){
-  document.getElementById("docMsg").innerHTML="Not available right now.";
+// LOGIN CHECK
+if(localStorage.getItem("loggedIn")!=="true"){
+  window.location.href="index.html";
 }
 
-let videoContainer = document.getElementById("videos");
-
-for(let i=1;i<=12;i++){
-  videoContainer.innerHTML += `
-    <div class="video-box">
-      <button onclick="playVideo(${i})">▶ Play Video ${i}</button>
-      <div id="v${i}"></div>
-    </div>
-  `;
+function toggleMenu(){
+  let m=document.getElementById("menuBox");
+  m.style.display=m.style.display==="block"?"none":"block";
 }
 
-function playVideo(num){
-  document.getElementById("v"+num).innerHTML = `
-    <div class="video-frame">
-      <video controls autoplay>
-        <source src="${num}.mp4" type="video/mp4">
-      </video>
-    </div>
-  `;
+function logout(){
+  localStorage.removeItem("loggedIn");
+  window.location.href="index.html";
 }
+
+function toggleDark(){
+  document.body.classList.toggle("dark");
+}
+
+function showBalance(){
+  let el=document.getElementById("balance");
+  let v=0;
+  let i=setInterval(()=>{
+    v+=25;
+    el.innerHTML="£"+v;
+    if(v>=750) clearInterval(i);
+  },50);
+}
+
+function toggleTx(){
+  let t=document.getElementById("tx");
+  t.style.display=t.style.display==="none"?"block":"none";
+}
+
+function convert(){
+  let usd=document.getElementById("usd").value;
+  document.getElementById("res").innerHTML="£"+(usd*0.79).toFixed(2);
+}
+
+new Chart(document.getElementById("chart"), {
+  type:'line',
+  data:{ labels:["Jan","Feb","Mar"], datasets:[{data:[100,300,750]}]}
+});
+
+// 🔥 TRANSACTIONS LOGIC
+let transactions = [
+  {type:"deposit", name:"Cash Deposit", date:"12-04-2026 • 04:59 PM", amount:50000},
+  {type:"comp", name:"Case Compensation", date:"11-04-2026 • 08:34 AM", amount:250},
+  {type:"comp", name:"Case Compensation", date:"04-04-2026 • 09:57 AM", amount:250},
+  {type:"comp", name:"Case Compensation", date:"28-03-2026 • 05:11 PM", amount:250},
+  {type:"comp", name:"Case Compensation", date:"21-03-2026 • 03:34 PM", amount:250}
+];
+
+function renderTx(list){
+  let html="";
+  list.forEach(t=>{
+    html+=`
+      <hr>
+      <div style="display:flex; justify-content:space-between; padding:10px 0;">
+        <div>
+          <b>${t.name}</b><br>
+          <small>${t.date}</small>
+        </div>
+        <div style="color:green; font-weight:bold;">+$${t.amount.toLocaleString()}</div>
+      </div>
+    `;
+  });
+  document.getElementById("txList").innerHTML=html;
+}
+
+function filterTx(){
+  let f=document.getElementById("filter").value;
+  let s=document.getElementById("search").value.toLowerCase();
+
+  let filtered=transactions.filter(t=>{
+    return (f==="all" || t.type===f) &&
+           (t.name.toLowerCase().includes(s) || t.date.includes(s));
+  });
+
+  renderTx(filtered);
+}
+
+function downloadTx(){
+  let content="TRANSACTIONS REPORT\n\n";
+  transactions.forEach(t=>{
+    content+=`${t.name} | ${t.date} | +$${t.amount}\n`;
+  });
+
+  let blob=new Blob([content], {type:"text/plain"});
+  let a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="transactions.txt";
+  a.click();
+}
+
+setTimeout(()=>{renderTx(transactions)},500);
+
+// बाकी functions SAME
+function addFunds(){...}
+function loadVideos(){...}
+function ai(){...}
+function scanFinger(){...}
 
 </script>
 
