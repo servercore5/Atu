@@ -75,25 +75,12 @@ button {
 }
 
 /* CARD */
-.card {
-  width:300px;
-  height:180px;
-  perspective:1000px;
-}
-
-.card-inner {
-  width:100%;
-  height:100%;
-  transition:0.6s;
-  transform-style:preserve-3d;
-}
-
+.card { width:300px; height:180px; perspective:1000px; }
+.card-inner { width:100%; height:100%; transition:0.6s; transform-style:preserve-3d; }
 .card:hover .card-inner { transform:rotateY(180deg); }
 
 .card-front, .card-back {
-  position:absolute;
-  width:100%;
-  height:100%;
+  position:absolute; width:100%; height:100%;
   backface-visibility:hidden;
   border-radius:10px;
   padding:20px;
@@ -134,7 +121,6 @@ button {
 
 <header>
   <img src="125.png"> Federal Trade Commission
-
   <div class="menu">
     <button onclick="toggleMenu()">☰</button>
     <div class="dropdown" id="menuBox">
@@ -156,13 +142,8 @@ button {
 
 <div class="card">
   <div class="card-inner">
-    <div class="card-front">
-      💳 Premium Card<br><br>
-      1200 3478 6766 7776
-    </div>
-    <div class="card-back">
-      CVV: 987<br>Exp: 12/28
-    </div>
+    <div class="card-front">💳 Premium Card<br><br>1200 3478 6766 7776</div>
+    <div class="card-back">CVV: 987<br>Exp: 12/28</div>
   </div>
 </div>
 
@@ -171,177 +152,125 @@ button {
   <h2 id="balance">$51,000.00</h2>
 </div>
 
-<!-- 🔥 ADVANCED TRANSACTIONS -->
+<!-- TRANSACTIONS -->
 <div class="box">
-  <button onclick="toggleTx()">View Transactions</button>
+<button onclick="toggleTx()">View Transactions</button>
 
-  <div id="tx" style="display:none; margin-top:15px;">
+<div id="tx" style="display:none; margin-top:15px;">
+<select id="filter" onchange="filterTx()" style="width:100%; padding:10px;">
+<option value="all">All</option>
+<option value="deposit">Deposits</option>
+<option value="comp">Compensation</option>
+<option value="transfer">Transfers</option>
+</select>
 
-    <select id="filter" onchange="filterTx()" 
-      style="width:100%; padding:10px; margin-bottom:10px; border-radius:20px;">
-      <option value="all">All</option>
-      <option value="deposit">Deposits</option>
-      <option value="comp">Compensation</option>
-    </select>
+<input id="search" onkeyup="filterTx()" placeholder="Search..." style="width:100%; padding:10px; margin-top:10px;">
+<button onclick="downloadTx()">📥 Download</button>
 
-    <input id="search" type="text" placeholder="Search..." 
-      onkeyup="filterTx()"
-      style="width:100%; padding:10px; margin-bottom:10px; border-radius:10px; border:1px solid #ccc;">
-
-    <button onclick="downloadTx()" style="margin-bottom:15px;">📥 Download</button>
-
-    <div id="txList"></div>
-
-  </div>
+<div id="txList"></div>
+</div>
 </div>
 
+<!-- TRANSFER -->
 <div class="box">
-  <h3>USD → GBP</h3>
-  <input id="usd" type="number">
-  <button onclick="convert()">Convert</button>
-  <p id="res"></p>
-</div>
-
-<div class="box">
-  <canvas id="chart"></canvas>
-</div>
-
-<div class="box">
-  <button onclick="addFunds()">Add Funds</button>
-  <div id="fundFlow"></div>
-</div>
-
-<div class="box">
-  <button onclick="loadVideos()">Unlock Content</button>
-  <div id="videos"></div>
-</div>
-
-<div class="box">
-  <button onclick="scanFinger()">🔐 Scan Fingerprint</button>
-  <p id="fingerStatus"></p>
-</div>
-
-<div class="box">
-  <h3>Blockchain Ledger</h3>
-  <div id="ledger" style="height:120px; overflow:auto;"></div>
-</div>
-
-<div class="box">
-  XP: <span id="xp">0</span> | Level: <span id="level">1</span>
-  <button onclick="gainXP()">Earn XP</button>
+<h3>Transfer Money</h3>
+<button onclick="openTransfer()">Start Transfer</button>
+<div id="transferFlow"></div>
 </div>
 
 </div>
 
-<div id="assistant" onclick="ai()">🤖</div>
-<div id="notif">Success ✔</div>
-
-<footer>Federal Trade commission secure wallet</footer>
+<div id="notif">Success</div>
 
 <script>
 
-// LOGIN CHECK
-if(localStorage.getItem("loggedIn")!=="true"){
-  window.location.href="index.html";
+// TRANSACTIONS DATA
+let transactions=[
+{type:"deposit",name:"Cash Deposit",date:"12-04-2026",amount:50000},
+{type:"comp",name:"Case Compensation",date:"11-04-2026",amount:250}
+];
+
+// RENDER
+function renderTx(list){
+let html="";
+list.forEach(t=>{
+let color=t.amount<0?"red":"green";
+let sign=t.amount<0?"-":"+";
+html+=`<div style="display:flex;justify-content:space-between;padding:10px;">
+<div>${t.name}<br><small>${t.date}</small></div>
+<div style="color:${color};font-weight:bold;">${sign}$${Math.abs(t.amount)}</div>
+</div><hr>`;
+});
+document.getElementById("txList").innerHTML=html;
 }
 
-function toggleMenu(){
-  let m=document.getElementById("menuBox");
-  m.style.display=m.style.display==="block"?"none":"block";
+// FILTER
+function filterTx(){
+let f=document.getElementById("filter").value;
+let s=document.getElementById("search").value.toLowerCase();
+
+let filtered=transactions.filter(t=>{
+return (f==="all"||t.type===f) &&
+(t.name.toLowerCase().includes(s)||t.date.includes(s));
+});
+renderTx(filtered);
 }
 
-function logout(){
-  localStorage.removeItem("loggedIn");
-  window.location.href="index.html";
+// DOWNLOAD
+function downloadTx(){
+let content="";
+transactions.forEach(t=>{
+content+=`${t.name} ${t.date} ${t.amount}\n`;
+});
+let blob=new Blob([content]);
+let a=document.createElement("a");
+a.href=URL.createObjectURL(blob);
+a.download="transactions.txt";
+a.click();
 }
 
-function toggleDark(){
-  document.body.classList.toggle("dark");
+// TRANSFER FLOW
+function openTransfer(){
+document.getElementById("transferFlow").innerHTML=`
+<input id="name" placeholder="Name"><br>
+<input id="amount" type="number" placeholder="Amount"><br>
+<input id="date" type="datetime-local"><br>
+<button onclick="schedulePayment()">Schedule</button>
+`;
 }
 
-function showBalance(){
-  let el=document.getElementById("balance");
-  let v=0;
-  let i=setInterval(()=>{
-    v+=25;
-    el.innerHTML="£"+v;
-    if(v>=750) clearInterval(i);
-  },50);
+function schedulePayment(){
+let name=document.getElementById("name").value;
+let amount=document.getElementById("amount").value;
+let date=document.getElementById("date").value;
+
+let delay=new Date(date)-new Date();
+
+setTimeout(()=>{
+transactions.unshift({
+type:"transfer",
+name:"Transfer to "+name,
+date:new Date().toLocaleString(),
+amount:-amount
+});
+renderTx(transactions);
+
+let n=document.getElementById("notif");
+n.style.display="block";
+n.innerText="Payment Sent!";
+setTimeout(()=>n.style.display="none",3000);
+
+},delay);
+
+alert("Payment Scheduled");
 }
 
 function toggleTx(){
-  let t=document.getElementById("tx");
-  t.style.display=t.style.display==="none"?"block":"none";
+let t=document.getElementById("tx");
+t.style.display=t.style.display==="none"?"block":"none";
 }
 
-function convert(){
-  let usd=document.getElementById("usd").value;
-  document.getElementById("res").innerHTML="£"+(usd*0.79).toFixed(2);
-}
-
-new Chart(document.getElementById("chart"), {
-  type:'line',
-  data:{ labels:["Jan","Feb","Mar"], datasets:[{data:[100,300,750]}]}
-});
-
-// 🔥 TRANSACTIONS LOGIC
-let transactions = [
-  {type:"deposit", name:"Cash Deposit", date:"12-04-2026 • 04:59 PM", amount:50000},
-  {type:"comp", name:"Case Compensation", date:"11-04-2026 • 08:34 AM", amount:250},
-  {type:"comp", name:"Case Compensation", date:"04-04-2026 • 09:57 AM", amount:250},
-  {type:"comp", name:"Case Compensation", date:"28-03-2026 • 05:11 PM", amount:250},
-  {type:"comp", name:"Case Compensation", date:"21-03-2026 • 03:34 PM", amount:250}
-];
-
-function renderTx(list){
-  let html="";
-  list.forEach(t=>{
-    html+=`
-      <hr>
-      <div style="display:flex; justify-content:space-between; padding:10px 0;">
-        <div>
-          <b>${t.name}</b><br>
-          <small>${t.date}</small>
-        </div>
-        <div style="color:green; font-weight:bold;">+$${t.amount.toLocaleString()}</div>
-      </div>
-    `;
-  });
-  document.getElementById("txList").innerHTML=html;
-}
-
-function filterTx(){
-  let f=document.getElementById("filter").value;
-  let s=document.getElementById("search").value.toLowerCase();
-
-  let filtered=transactions.filter(t=>{
-    return (f==="all" || t.type===f) &&
-           (t.name.toLowerCase().includes(s) || t.date.includes(s));
-  });
-
-  renderTx(filtered);
-}
-
-function downloadTx(){
-  let content="TRANSACTIONS REPORT\n\n";
-  transactions.forEach(t=>{
-    content+=`${t.name} | ${t.date} | +$${t.amount}\n`;
-  });
-
-  let blob=new Blob([content], {type:"text/plain"});
-  let a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="transactions.txt";
-  a.click();
-}
-
-setTimeout(()=>{renderTx(transactions)},500);
-
-// बाकी functions SAME
-function addFunds(){...}
-function loadVideos(){...}
-function ai(){...}
-function scanFinger(){...}
+renderTx(transactions);
 
 </script>
 
