@@ -8,164 +8,68 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body { margin:0; font-family:Arial; background:#eef2f7; transition:0.3s;}
+body { margin:0; font-family:Arial; background:#eef2f7;}
 .dark { background:#121212; color:white;}
 
-header, footer {
-  background:#0a3d91;
-  color:white;
-  padding:15px;
-}
+header, footer {background:#0a3d91;color:white;padding:15px;}
+.menu { position:absolute; right:20px; top:15px;}
 
-header img { height:40px; }
+.dropdown {display:none; position:absolute; right:0; background:white; width:220px;}
+.dropdown div {padding:10px; border-bottom:1px solid #ddd; cursor:pointer;}
 
-.menu { position:absolute; right:20px; top:15px; }
+.container { padding:20px;}
+.box {background:white; padding:20px; border-radius:10px; margin:15px 0;}
+.dark .box {background:#1e1e1e;}
 
-.dropdown {
-  display:none;
-  position:absolute;
-  right:0;
-  background:white;
-  width:220px;
-}
+button {padding:10px; background:#0a3d91; color:white; border:none; cursor:pointer;}
 
-.dropdown div {
-  padding:10px;
-  border-bottom:1px solid #ddd;
-  color:black;
-  cursor:pointer;
-}
+#notif {position:fixed; top:20px; right:20px; background:green; color:white; padding:10px; display:none;}
 
-.container { padding:20px; }
-
-.box {
-  background:white;
-  padding:20px;
-  border-radius:10px;
-  margin:15px 0;
-}
-
-.dark .box { background:#1e1e1e; }
-
-button {
-  padding:10px;
-  margin-top:10px;
-  background:#0a3d91;
-  color:white;
-  border:none;
-  cursor:pointer;
-}
-
-#assistant {
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  background:#0a3d91;
-  color:white;
-  padding:15px;
-  border-radius:50%;
-  cursor:pointer;
-}
-
-.toggle {
-  position:fixed;
-  top:20px;
-  left:20px;
-  cursor:pointer;
-}
-
-/* CARD */
-.card { width:300px; height:180px; perspective:1000px; }
-.card-inner { width:100%; height:100%; transition:0.6s; transform-style:preserve-3d; }
-.card:hover .card-inner { transform:rotateY(180deg); }
-
-.card-front, .card-back {
-  position:absolute; width:100%; height:100%;
-  backface-visibility:hidden;
-  border-radius:10px;
-  padding:20px;
-  color:white;
-}
-
-.card-front { background:#0a3d91; }
-.card-back { background:#222; transform:rotateY(180deg); }
-
-/* Satellite */
-#satellite {
-  position:fixed;
-  top:50%;
-  left:-50px;
-  font-size:30px;
-  animation:fly 10s linear infinite;
-}
-
-@keyframes fly {
-  from { left:-50px; }
-  to { left:110%; }
-}
-
-/* Notification */
-#notif {
-  position:fixed;
-  top:20px;
-  right:20px;
-  background:green;
-  color:white;
-  padding:10px;
-  display:none;
-}
+.toggle {position:fixed; top:20px; left:20px; cursor:pointer;}
 </style>
 </head>
 
 <body>
 
 <header>
-  <img src="125.png"> Federal Trade Commission
-  <div class="menu">
-    <button onclick="toggleMenu()">☰</button>
-    <div class="dropdown" id="menuBox">
-      <div>👤 Profile</div>
-      <div>Checkings</div>
-      <div>Savings</div>
-      <div>Investments</div>
-      <div>Credit Card</div>
-      <div>Loans</div>
-      <div onclick="logout()">🚪 Sign Out</div>
-    </div>
-  </div>
+FTC Secure Wallet
+
+<div class="menu">
+<button onclick="toggleMenu()">☰</button>
+<div class="dropdown" id="menuBox">
+<div>Profile</div>
+<div>Checkings</div>
+<div>Savings</div>
+<div>Investments</div>
+<div>Credit Card</div>
+<div>Loans</div>
+<div onclick="logout()">Sign Out</div>
+</div>
+</div>
 </header>
 
 <div class="toggle" onclick="toggleDark()">🌙</div>
-<div id="satellite">🛰️💷</div>
 
 <div class="container">
 
-<div class="card">
-  <div class="card-inner">
-    <div class="card-front">💳 Premium Card<br><br>1200 3478 6766 7776</div>
-    <div class="card-back">CVV: 987<br>Exp: 12/28</div>
-  </div>
-</div>
-
-<div class="box" onclick="showBalance()">
-  Account: 13007677876609
-  <h2 id="balance">$51,000.00</h2>
+<div class="box">
+<h2 id="balance">$51,000.00</h2>
 </div>
 
 <!-- TRANSACTIONS -->
 <div class="box">
 <button onclick="toggleTx()">View Transactions</button>
 
-<div id="tx" style="display:none; margin-top:15px;">
-<select id="filter" onchange="filterTx()" style="width:100%; padding:10px;">
+<div id="tx" style="display:none;">
+<select id="filter" onchange="filterTx()">
 <option value="all">All</option>
 <option value="deposit">Deposits</option>
 <option value="comp">Compensation</option>
 <option value="transfer">Transfers</option>
 </select>
 
-<input id="search" onkeyup="filterTx()" placeholder="Search..." style="width:100%; padding:10px; margin-top:10px;">
-<button onclick="downloadTx()">📥 Download</button>
+<input id="search" onkeyup="filterTx()" placeholder="Search...">
+<button onclick="downloadTx()">Download</button>
 
 <div id="txList"></div>
 </div>
@@ -178,16 +82,41 @@ button {
 <div id="transferFlow"></div>
 </div>
 
+<!-- CHART -->
+<div class="box">
+<canvas id="chart"></canvas>
+</div>
+
+<!-- LEDGER -->
+<div class="box">
+<h3>Blockchain Ledger</h3>
+<div id="ledger" style="height:120px; overflow:auto;"></div>
+</div>
+
 </div>
 
 <div id="notif">Success</div>
 
 <script>
 
-// TRANSACTIONS DATA
+// MENU
+function toggleMenu(){
+let m=document.getElementById("menuBox");
+m.style.display=m.style.display==="block"?"none":"block";
+}
+
+function logout(){alert("Logged out");}
+
+// DARK
+function toggleDark(){document.body.classList.toggle("dark");}
+
+// TRANSACTIONS (FULL RESTORED)
 let transactions=[
-{type:"deposit",name:"Cash Deposit",date:"12-04-2026",amount:50000},
-{type:"comp",name:"Case Compensation",date:"11-04-2026",amount:250}
+{type:"deposit",name:"Cash Deposit",date:"12-04-2026 04:59 PM",amount:50000},
+{type:"comp",name:"Case Compensation",date:"11-04-2026 08:34 AM",amount:250},
+{type:"comp",name:"Case Compensation",date:"04-04-2026 09:57 AM",amount:250},
+{type:"comp",name:"Case Compensation",date:"28-03-2026 05:11 PM",amount:250},
+{type:"comp",name:"Case Compensation",date:"21-03-2026 03:34 PM",amount:250}
 ];
 
 // RENDER
@@ -229,7 +158,7 @@ a.download="transactions.txt";
 a.click();
 }
 
-// TRANSFER FLOW
+// TRANSFER
 function openTransfer(){
 document.getElementById("transferFlow").innerHTML=`
 <input id="name" placeholder="Name"><br>
@@ -264,6 +193,18 @@ setTimeout(()=>n.style.display="none",3000);
 
 alert("Payment Scheduled");
 }
+
+// CHART
+new Chart(document.getElementById("chart"), {
+type:'line',
+data:{labels:["Jan","Feb","Mar"],datasets:[{data:[100,300,750]}]}
+});
+
+// LEDGER
+setInterval(()=>{
+let l=document.getElementById("ledger");
+l.innerHTML=`<p>$${Math.random()*1000|0}</p>`+l.innerHTML;
+},2000);
 
 function toggleTx(){
 let t=document.getElementById("tx");
